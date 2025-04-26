@@ -1,11 +1,11 @@
 ---
 title: "FirstPost"
-description: 
+description: The first post of sams blog
 date: 2025-04-26T13:10:20+02:00
-image: 
-math: 
-license: 
-hidden: false
-comments: true
-draft: true
+categories:
+  - Computational Mechanics
+tags:
+  - Test
 ---
+
+## Yes ## 
