@@ -20,9 +20,9 @@ $$
     x = A^{-1}b
 $$
 Where 
-- *b* is a collection of our externally known forces
-- *A* is a collection of known member directions
-- *x*  is the collection of unknown forces and reactions
+- *b* is a collection of our externally known forces.
+- *A* is a collection of known normalized member directions.
+- *x*  is the collection of unknown forces and reactions.
 
 ## Matrix Construction Requirements
 To perform matrix operations, we need a square matrix. Each row corresponds to force equilibrium equations, with coefficients representing the directional contribution of each member at the joints. Most entries will be zero except where members connect to joints.
@@ -39,7 +39,8 @@ $$
 
 If the truss is unstable matrix A will become rectangular and thus has no solution, i.e it indicates a Mechanism.
 ### Building the Coefficient Matrix
-When constructing the global matrix, we only consider the joints and external loading. The coefficients are the directional components of each member, representing their orientation in 2D space.
+When constructing the global matrix, we only consider the joints and external loading. The coefficients are the normalized directional components of each member, representing their orientation in 2D space.
+The sign convention used here are assuming positive member forces equals tension. 
 
 For example:
 
