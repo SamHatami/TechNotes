@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Sam Hatami's Tech Notes</title><link>https://samhatami.github.io/TechNotes/post/</link><description>Recent content in Posts on Sam Hatami's Tech Notes</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sun, 01 Jun 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://samhatami.github.io/TechNotes/post/index.xml" rel="self" type="application/rss+xml"/><item><title>Shader Of The Week - 2</title><link>https://samhatami.github.io/TechNotes/p/shader-of-the-week-2/</link><pubDate>Sun, 01 Jun 2025 00:00:00 +0000</pubDate><guid>https://samhatami.github.io/TechNotes/p/shader-of-the-week-2/</guid><description>&lt;p>The goal is to create a shader each week, doesn&amp;rsquo;t matter how simple or complex, as long as I keep going on. No AI, just documentation and tutorials.&lt;/p>
+&lt;p>This time around I&amp;rsquo;ll try and make a grid, inspired by the book of shaders &lt;a class="link" href="https://thebookofshaders.com/edit.php#10/ikeda-simple-grid.frag" target="_blank" rel="noopener"
+>https://thebookofshaders.com/edit.php#10/ikeda-simple-grid.frag&lt;/a>&lt;/p>
+&lt;h2 id="what-it-does">What it does
+&lt;/h2>&lt;ul>
+&lt;li>&lt;code>gl_FragCoord.xy/u_resolution.xy&lt;/code> normalizes the pixel coordinates into the range [0.0-1.0]&lt;/li>
+&lt;li>&lt;code>fract(st * res)&lt;/code> return &lt;code>st*res - floor(st*res)&lt;/code>, which basically creates this&lt;/li>
+&lt;/ul>
+&lt;p>&lt;img src="https://samhatami.github.io/TechNotes/p/shader-of-the-week-2/fract.png"
+width="138"
+height="138"
+srcset="https://samhatami.github.io/TechNotes/p/shader-of-the-week-2/fract_hu_f97a948aff6fbfe2.png 480w, https://samhatami.github.io/TechNotes/p/shader-of-the-week-2/fract_hu_d893223e4a057834.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="100"
+data-flex-basis="240px"
+>&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>step(t, grid.x)&lt;/code> and &lt;code>step(t, grid.y)&lt;/code> returns 0 if grid.x || grid.y is &amp;lt; 0 and 1 if otherwise&lt;/li>
+&lt;/ul>
+&lt;p>&lt;img src="https://samhatami.github.io/TechNotes/p/shader-of-the-week-2/stepX.png"
+width="135"
+height="135"
+srcset="https://samhatami.github.io/TechNotes/p/shader-of-the-week-2/stepX_hu_d0eda017d3b1627f.png 480w, https://samhatami.github.io/TechNotes/p/shader-of-the-week-2/stepX_hu_791362562c819fa1.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="100"
+data-flex-basis="240px"
+> &lt;img src="https://samhatami.github.io/TechNotes/p/shader-of-the-week-2/stepY.png"
+width="135"
+height="135"
+srcset="https://samhatami.github.io/TechNotes/p/shader-of-the-week-2/stepY_hu_f14455f231602b3d.png 480w, https://samhatami.github.io/TechNotes/p/shader-of-the-week-2/stepY_hu_e946425c091a295d.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="100"
+data-flex-basis="240px"
+>&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-GLSL" data-lang="GLSL">&lt;span class="line">&lt;span class="cl">&lt;span class="k">precision&lt;/span> &lt;span class="k">mediump&lt;/span> &lt;span class="k">float&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">uniform&lt;/span> &lt;span class="k">vec2&lt;/span> &lt;span class="n">u_resolution&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">float&lt;/span> &lt;span class="n">scale&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="mf">400.0&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">float&lt;/span> &lt;span class="n">l_thickness&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="mf">0.01&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">float&lt;/span> &lt;span class="n">grid&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="k">vec2&lt;/span> &lt;span class="n">st&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="k">float&lt;/span> &lt;span class="n">res&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="k">float&lt;/span> &lt;span class="n">t&lt;/span>&lt;span class="p">){&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">vec2&lt;/span> &lt;span class="n">grid&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">fract&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">st&lt;/span> &lt;span class="o">*&lt;/span> &lt;span class="n">res&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="mf">1.&lt;/span>&lt;span class="o">-&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">step&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">t&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="n">grid&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">x&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">*&lt;/span> &lt;span class="n">step&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">t&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="n">grid&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">y&lt;/span>&lt;span class="p">));&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">void&lt;/span> &lt;span class="n">main&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">vec2&lt;/span> &lt;span class="n">st&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">gl_FragCoord&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">xy&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="n">u_resolution&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">xy&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">vec3&lt;/span> &lt;span class="n">color&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="k">vec3&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="mf">0.0&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">vec2&lt;/span> &lt;span class="n">grid_scale&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">st&lt;/span>&lt;span class="o">*&lt;/span>&lt;span class="n">scale&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="c1">// scale&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">color&lt;/span> &lt;span class="o">+=&lt;/span> &lt;span class="k">vec3&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="mf">0.5725&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mf">0.5725&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mf">0.5725&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="o">*&lt;/span>&lt;span class="n">grid&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">grid_scale&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="mf">0.04&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">l_thickness&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">gl_FragColor&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="k">vec4&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">color&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="mf">1.0&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>
+&lt;div class="glsl-canvas-container">
+&lt;canvas id="canvas-1748803819189647863" style="width: 100%; height: 400px;">&lt;/canvas>
+&lt;script src="https://rawgit.com/patriciogonzalezvivo/glslCanvas/master/dist/GlslCanvas.js">&lt;/script>
+&lt;script>
+document.addEventListener("DOMContentLoaded", function() {
+const canvas = document.getElementById('canvas-1748803819189647863');
+const sandbox = new GlslCanvas(canvas);
+sandbox.load(`\nprecision mediump float;\n\nuniform vec2 u_resolution;\n\nfloat scale = 400.0;\nfloat l_thickness = 0.01;\n\nfloat grid(vec2 st, float res, float t)\u007b\n vec2 grid = fract(st * res);\n return 1.-(step(t,grid.x) * step(t,grid.y)); \n\u007d\n\nvoid main() \u007b\n vec2 st = gl_FragCoord.xy\/u_resolution.xy;\n vec3 color = vec3(0.0);\n\n vec2 grid_scale = st*scale; \/\/ scale\n\n color \u002b= vec3(0.5725, 0.5725, 0.5725)*grid(grid_scale,0.04, l_thickness);\n\n gl_FragColor = vec4(color,1.0);\n\u007d\n`);
+});
+&lt;/script>
+&lt;/div></description></item><item><title>Shader Of The Week - 1</title><link>https://samhatami.github.io/TechNotes/p/shader-of-the-week-1/</link><pubDate>Wed, 21 May 2025 00:00:00 +0000</pubDate><guid>https://samhatami.github.io/TechNotes/p/shader-of-the-week-1/</guid><description>&lt;p>The goal is to create a shader each week, doesn&amp;rsquo;t matter how simple or complex, as long as I keep going on. No AI, just documentation and tutorials.&lt;/p>
+&lt;p>This one is just a simple horisontal movement. Yay!&lt;/p>
+&lt;h2 id="what-it-does">What it does
+&lt;/h2>&lt;ul>
+&lt;li>&lt;code>gl_FragCoord.xy/u_resolution.xy&lt;/code> normalizes the pixel coordinates into the range [0.0-1.0]&lt;/li>
+&lt;li>&lt;code>sin(st.x*PI-u_time)&lt;/code> creates a wave-pattern that depends on the horizontal coordinate and time (negative time means it&amp;rsquo;ll move left to right). PI adjusts the wave to move one cycle across the view.&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-GLSL" data-lang="GLSL">&lt;span class="line">&lt;span class="cl">&lt;span class="k">precision&lt;/span> &lt;span class="k">mediump&lt;/span> &lt;span class="k">float&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">uniform&lt;/span> &lt;span class="k">vec2&lt;/span> &lt;span class="n">u_resolution&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">uniform&lt;/span> &lt;span class="k">float&lt;/span> &lt;span class="n">u_time&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">float&lt;/span> &lt;span class="n">PI&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="mf">3.14159&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">void&lt;/span> &lt;span class="n">main&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">vec2&lt;/span> &lt;span class="n">st&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">gl_FragCoord&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">xy&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="n">u_resolution&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">xy&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">vec3&lt;/span> &lt;span class="n">color&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="k">vec3&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">sin&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">st&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">x&lt;/span>&lt;span class="o">*&lt;/span>&lt;span class="n">PI&lt;/span>&lt;span class="o">-&lt;/span>&lt;span class="n">u_time&lt;/span>&lt;span class="p">));&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">gl_FragColor&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="k">vec4&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">color&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mf">1.0&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>
+&lt;div class="glsl-canvas-container">
+&lt;canvas id="canvas-1748803819084242551" style="width: 100%; height: 400px;">&lt;/canvas>
+&lt;script src="https://rawgit.com/patriciogonzalezvivo/glslCanvas/master/dist/GlslCanvas.js">&lt;/script>
+&lt;script>
+document.addEventListener("DOMContentLoaded", function() {
+const canvas = document.getElementById('canvas-1748803819084242551');
+const sandbox = new GlslCanvas(canvas);
+sandbox.load(`\nprecision mediump float;\n\nuniform vec2 u_resolution;\nuniform float u_time;\n\nfloat PI = 3.14159;\n\nvoid main() \u007b\n vec2 st = gl_FragCoord.xy\/u_resolution.xy;\n vec3 color = vec3(sin(st.x*PI-u_time));\n gl_FragColor = vec4(color, 1.0);\n\u007d\n`);
+});
+&lt;/script>
+&lt;/div></description></item><item><title>Matrix Methods of Joints</title><link>https://samhatami.github.io/TechNotes/p/matrix-methods-of-joints/</link><pubDate>Sun, 27 Apr 2025 00:00:00 +0000</pubDate><guid>https://samhatami.github.io/TechNotes/p/matrix-methods-of-joints/</guid><description>&lt;p>A direct translation of Method of Joints in matrix form is to solve all local joint equillibrium equations in &amp;ldquo;one&amp;rdquo; go. This is a key advantage when
+going for automation.&lt;/p>
+&lt;h2 id="matrix-formulation">Matrix formulation
+&lt;/h2>&lt;p>The goal is to solve the matrix operation, which is for statically determined trusses.&lt;/p>
+$$
+x = A^{-1}b
+$$&lt;p>
+Where&lt;/p>
+&lt;ul>
+&lt;li>&lt;em>b&lt;/em> is a collection of our externally known forces.&lt;/li>
+&lt;li>&lt;em>A&lt;/em> is a collection of known normalized member directions.&lt;/li>
+&lt;li>&lt;em>x&lt;/em> is the collection of unknown forces and reactions.&lt;/li>
+&lt;/ul>
+&lt;h2 id="matrix-construction-requirements">Matrix Construction Requirements
+&lt;/h2>&lt;p>To perform matrix operations, we need a square matrix. Each row corresponds to force equilibrium equations, with coefficients representing the directional contribution of each member at the joints. Most entries will be zero except where members connect to joints.&lt;/p>
+&lt;p>The global matrix dimensions are:&lt;/p>
+&lt;ul>
+&lt;li>Rows = Number of Nodes × 2 (representing force equilibrium in both x and y directions)&lt;/li>
+&lt;li>Columns = Number of Members + Total Number of Supports&lt;/li>
+&lt;/ul>
+&lt;p>This directly relates to the condition for a statically determinate structure:
+&lt;/p>
+$$
+members+reactions=2*nodes
+$$&lt;p>If the truss is unstable matrix A will become rectangular and thus has no solution, i.e it indicates a Mechanism.&lt;/p>
+&lt;h3 id="building-the-coefficient-matrix">Building the Coefficient Matrix
+&lt;/h3>&lt;p>When constructing the global matrix, we only consider the joints and external loading. The coefficients are the normalized directional components of each member, representing their orientation in 2D space.
+The sign convention used here are assuming positive member forces equals tension.&lt;/p>
+&lt;p>For example:&lt;/p>
+&lt;ul>
+&lt;li>Member 1&amp;rsquo;s normalized direction might be (1,0), representing a horizontal member&lt;/li>
+&lt;li>Each row represents equilibrium at a specific node in a specific direction&lt;/li>
+&lt;/ul>
+&lt;p>Consider the example&lt;/p>
+&lt;p>ADD EXAMPLE PICS AND MATRICES&lt;/p>
+&lt;h2 id="solving-by-code">Solving by code
+&lt;/h2>&lt;p>Math.Net Numerics&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;span class="lnt">27
+&lt;/span>&lt;span class="lnt">28
+&lt;/span>&lt;span class="lnt">29
+&lt;/span>&lt;span class="lnt">30
+&lt;/span>&lt;span class="lnt">31
+&lt;/span>&lt;span class="lnt">32
+&lt;/span>&lt;span class="lnt">33
+&lt;/span>&lt;span class="lnt">34
+&lt;/span>&lt;span class="lnt">35
+&lt;/span>&lt;span class="lnt">36
+&lt;/span>&lt;span class="lnt">37
+&lt;/span>&lt;span class="lnt">38
+&lt;/span>&lt;span class="lnt">39
+&lt;/span>&lt;span class="lnt">40
+&lt;/span>&lt;span class="lnt">41
+&lt;/span>&lt;span class="lnt">42
+&lt;/span>&lt;span class="lnt">43
+&lt;/span>&lt;span class="lnt">44
+&lt;/span>&lt;span class="lnt">45
+&lt;/span>&lt;span class="lnt">46
+&lt;/span>&lt;span class="lnt">47
+&lt;/span>&lt;span class="lnt">48
+&lt;/span>&lt;span class="lnt">49
+&lt;/span>&lt;span class="lnt">50
+&lt;/span>&lt;span class="lnt">51
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-csharp" data-lang="csharp">&lt;span class="line">&lt;span class="cl">&lt;span class="kd">public&lt;/span> &lt;span class="kd">static&lt;/span> &lt;span class="kt">double&lt;/span>&lt;span class="p">[,]&lt;/span> &lt;span class="n">BuildGlobalMatrix&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="k">this&lt;/span> &lt;span class="n">TrussStructure&lt;/span> &lt;span class="n">structure&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">Dictionary&lt;/span>&lt;span class="p">&amp;lt;&lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kt">int&lt;/span>&lt;span class="p">&amp;gt;&lt;/span> &lt;span class="n">nodeIndexMap&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kt">var&lt;/span> &lt;span class="n">nrOfRows&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">structure&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Nodes&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Count&lt;/span> &lt;span class="p">*&lt;/span> &lt;span class="m">2&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kt">var&lt;/span> &lt;span class="n">nrOfColumns&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">structure&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Members&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Count&lt;/span> &lt;span class="p">+&lt;/span> &lt;span class="n">structure&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">TotalReactionComponents&lt;/span>&lt;span class="p">();&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kt">var&lt;/span> &lt;span class="n">matrix&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="k">new&lt;/span> &lt;span class="kt">double&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="n">nrOfRows&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">nrOfColumns&lt;/span>&lt;span class="p">];&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">nodeIndexMap&lt;/span> &lt;span class="p">==&lt;/span> &lt;span class="kc">null&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="n">nodeIndexMap&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">structure&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">BuildNodeIndexMap&lt;/span>&lt;span class="p">();&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">for&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="kt">var&lt;/span> &lt;span class="n">i&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="m">0&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="n">i&lt;/span> &lt;span class="p">&amp;lt;&lt;/span> &lt;span class="n">structure&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Members&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Count&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="n">i&lt;/span>&lt;span class="p">++)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kt">var&lt;/span> &lt;span class="n">startNodeIndex&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">nodeIndexMap&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="n">structure&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Members&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="p">].&lt;/span>&lt;span class="n">Start&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Id&lt;/span>&lt;span class="p">];&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kt">var&lt;/span> &lt;span class="n">endNodeIndex&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">nodeIndexMap&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="n">structure&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Members&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="p">].&lt;/span>&lt;span class="n">End&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Id&lt;/span>&lt;span class="p">];&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kt">var&lt;/span> &lt;span class="n">member&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">structure&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Members&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="p">];&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">matrix&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="m">2&lt;/span> &lt;span class="p">*&lt;/span> &lt;span class="n">startNodeIndex&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">i&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">member&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Direction&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">X&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">matrix&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="m">2&lt;/span> &lt;span class="p">*&lt;/span> &lt;span class="n">startNodeIndex&lt;/span> &lt;span class="p">+&lt;/span> &lt;span class="m">1&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">i&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">member&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Direction&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Y&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">matrix&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="m">2&lt;/span> &lt;span class="p">*&lt;/span> &lt;span class="n">endNodeIndex&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">i&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="p">-&lt;/span>&lt;span class="n">member&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Direction&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">X&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">matrix&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="m">2&lt;/span> &lt;span class="p">*&lt;/span> &lt;span class="n">endNodeIndex&lt;/span> &lt;span class="p">+&lt;/span> &lt;span class="m">1&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">i&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="p">-&lt;/span>&lt;span class="n">member&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Direction&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Y&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kt">var&lt;/span> &lt;span class="n">reactionIndex&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">structure&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Members&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Count&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">foreach&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="kt">var&lt;/span> &lt;span class="n">support&lt;/span> &lt;span class="k">in&lt;/span> &lt;span class="n">structure&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Supports&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kt">var&lt;/span> &lt;span class="n">supportNodeIndex&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">nodeIndexMap&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="n">support&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">NodeData&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Id&lt;/span>&lt;span class="p">];&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">//The enum here is redundant, but kept for clarity.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">//user should be able to set the degree of freedom for each support and the global matrix should be built accordingly.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">//Pre-defined support types are just a convenience.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">//user will be able to set DoF for each support in the future in the GUI&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">support&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">BoundaryCondition&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Type&lt;/span> &lt;span class="p">==&lt;/span> &lt;span class="n">BoundaryConditionType&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Pinned&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">matrix&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="m">2&lt;/span> &lt;span class="p">*&lt;/span> &lt;span class="n">supportNodeIndex&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">reactionIndex&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="m">1&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">matrix&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="m">2&lt;/span> &lt;span class="p">*&lt;/span> &lt;span class="n">supportNodeIndex&lt;/span> &lt;span class="p">+&lt;/span> &lt;span class="m">1&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">reactionIndex&lt;/span> &lt;span class="p">+&lt;/span> &lt;span class="m">1&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="m">1&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">reactionIndex&lt;/span> &lt;span class="p">+=&lt;/span> &lt;span class="m">2&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">else&lt;/span> &lt;span class="k">if&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">support&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">BoundaryCondition&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Type&lt;/span> &lt;span class="p">==&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">BoundaryConditionType&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Roller&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="c1">//Should be allowed to set x or y to be free, or angled?&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">//TODO: Improve next pass.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">support&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">DegreeOfFreedom&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Ux&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">matrix&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="m">2&lt;/span> &lt;span class="p">*&lt;/span> &lt;span class="n">supportNodeIndex&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">reactionIndex&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="m">1&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">else&lt;/span> &lt;span class="k">if&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">support&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">DegreeOfFreedom&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">Uy&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">matrix&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="m">2&lt;/span> &lt;span class="p">*&lt;/span> &lt;span class="n">supportNodeIndex&lt;/span> &lt;span class="p">+&lt;/span> &lt;span class="m">1&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">reactionIndex&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="m">1&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">reactionIndex&lt;/span>&lt;span class="p">++;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="n">matrix&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>&lt;a class="link" href="https://github.com/SamHatami/SamLabs.Structural/blob/main/SamLab.Structural/SamLab.Structural.Core/Analysis/TrussStructureSolver.cs" target="_blank" rel="noopener"
+>Code on a simple 2D solver &lt;/a>&lt;/p></description></item></channel></rss>
